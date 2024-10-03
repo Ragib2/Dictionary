@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dictionary Web</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+
+    <style>
+        body {
+            width: 100%;
+            height: 100%;
+            box-sizing: border-box;
+            background-color: lightseagreen;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        .container {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 22vw;
+            background-color: #ffffff;
+            padding: 2vw 3vw;
+            border-radius: 10px;
+
+        }
+
+        input {
+            outline: none;
+            border: none;
+            width: 70%;
+            border-bottom: 1px solid #2f2e2edd;
+            background-color: transparent;
+            color: #212121;
+            font-size: 1rem;
+            margin-right: 2vh;
+            padding-bottom: 1vw;
+        }
+
+        input::placeholder {
+            color: #646262dd;
+        }
+
+        input:focus {
+            color: #101010;
+        }
+
+        .search {
+            font-size: 1rem;
+            background-color: lightcyan;
+            width: 70px;
+            height: 50px;
+            border: 1px solid rgb(97, 215, 210);
+            border-radius: 10px;
+            color: #202020dd;
+
+            cursor: pointer;
+        }
+
+        .sample {
+            display: flex;
+            justify-content: space-between;
+            /* background-color: lightblue; */
+
+        }
+
+        button {
+            outline: none;
+            border: none;
+            background-color: transparent;
+        }
+
+        .sample-word {
+            font-size: .9rem;
+            color: #cbcbcb;
+            display: flex;
+            align-items: center;
+            justify-content: flex-start;
+        }
+
+        .para p {
+            font-size: 1.2vw;
+            color: #000;
+        }
+
+        p {
+            font-size: 1vw;
+            color: #a7a6a6;
+
+        }
+    </style>
+</head>
+
+<body>
+
+    <section class="container">
+        <audio src="" class="sound"></audio>
+        <div class="head">
+            <input type="text" id="text" placeholder="Enter word">
+            <button class="search">Search</button>
+        </div>
+
+        <div class="result"></div>
+
+
+    </section>
+
+</body>
+<script>
+
+    const sound = document.querySelector(".sound")
+    const btn = document.querySelector('.search')
+    const result = document.querySelector('.result')
+   
+    const url = "https://api.dictionaryapi.dev/api/v2/entries/en/"
+
+
+
+    btn.addEventListener('click', () => {
+        let text = document.querySelector("#text").value
+        console.log(text);
+
+        if (text.length == "") {
+            result.innerHTML = `<div class="sample">
+                <h2>Please write a word</h2>
+                
+            </div>`;
+        }
+        else {
+            fetch(`${url}${text}`)
+                .then((res) => {
+                    return res.json();
+                })
+                .then((data) => {
+                    console.log(data);
+                //    ${data[0].phonetics[0].audio}
+                    result.innerHTML = `
+            <div class="sample">
+                <h2>${text}</h2>
+                <button onclick ="playSound()"><i class="fa-solid fa-volume-high" style="color: #575757;"></i></button>
+            </div>
+            <div class="sample-word">
+                <p>${data[0].meanings[0].partOfSpeech}</p>
+                <p>${data[0].phonetics[1].text}</p>
+            </div>
+            <div class="para">
+                <p>${data[0].meanings[0].definitions[0].definition}</p>
+            </div>
+
+            <div class="para-sec">
+                 <p>${data[0].meanings[1].definitions[0].definition}</p>
+            </div>`;
+
+            sound.setAttribute("src", `${data[0].phonetics[0].audio}`)
+            console.log(sound)
+                })
+                .catch((error) => {
+                    result.innerHTML = `<h3>Word not found</h3>`
+                })
+        }
+
+        
+
+    })
+
+function playSound(){
+            sound.play();
+        }
+
+
+</script>
+
+</html>
